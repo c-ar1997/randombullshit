@@ -1,0 +1,3 @@
+/startevent
+/time set day
+/globalevent
