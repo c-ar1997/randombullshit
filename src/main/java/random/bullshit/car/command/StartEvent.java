@@ -16,10 +16,12 @@ import random.bullshit.car.RandomBullshit;
 public class StartEvent {
     public static void StartEvent() {
         CommandRegistrationCallback.EVENT.register((commandDispatcher, commandRegistryAccess, registrationEnvironment) -> {
-            commandDispatcher.register(CommandManager.literal("startevent").executes(commandContext -> {
+            commandDispatcher.register(CommandManager.literal("startevent").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
+                    .executes(commandContext -> {
                 if (!commandContext.getSource().getPlayer().getWorld().isClient()) {
                     Random random = commandContext.getSource().getPlayer().getWorld().getRandom();
                     ServerPlayerEntity rPlr = (ServerPlayerEntity) commandContext.getSource().getPlayer().getWorld().getPlayers().get(random.nextBetween(0,commandContext.getSource().getPlayer().getWorld().getPlayers().size() - 1));
+                    commandContext.getSource().sendMessage(Text.literal("Selected " + rPlr.getName().getString() + " for an event." ));
                     rPlr.getWorld().playSound(null,rPlr.getBlockPos(),
                             SoundEvents.ENTITY_ENDER_DRAGON_GROWL, SoundCategory.MASTER,1f,1f);
                     rPlr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§6 You have been selected for... §r§4||§r")));
@@ -36,6 +38,7 @@ public class StartEvent {
                             ServerPlayerEntity targetPlayer = commandContext.getSource().getServer().getPlayerManager().getPlayer(playerName);
                             ServerPlayerEntity sourcePlayer = commandContext.getSource().getPlayer();
                             if (targetPlayer != null && sourcePlayer != null){
+                                commandContext.getSource().sendMessage(Text.literal("Selected " + targetPlayer.getName().getString() + " for an event." ));
                                 targetPlayer.getWorld().playSound(null,targetPlayer.getBlockPos(),
                                         SoundEvents.ENTITY_ENDER_DRAGON_GROWL, SoundCategory.MASTER,1f,1f);
                                 targetPlayer.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§6 You have been selected for... §r§4||§r")));
@@ -48,9 +51,11 @@ public class StartEvent {
                     })));
         });
         CommandRegistrationCallback.EVENT.register((commandDispatcher, commandRegistryAccess, registrationEnvironment) -> {
-            commandDispatcher.register(CommandManager.literal("globalevent").executes(commandContext -> {
+            commandDispatcher.register(CommandManager.literal("globalevent").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
+                    .executes(commandContext -> {
                 if (!commandContext.getSource().getPlayer().getWorld().isClient()) {
                     commandContext.getSource().getPlayer().getServerWorld().getPlayers().forEach(serverPlayerEntity -> {
+                        commandContext.getSource().sendMessage(Text.literal("Triggered global event." ));
                         serverPlayerEntity.getWorld().playSound(null,serverPlayerEntity.getBlockPos(),
                                 SoundEvents.ENTITY_ENDER_DRAGON_GROWL, SoundCategory.MASTER,1f,1f);
                         serverPlayerEntity.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§6 All of you have been selected for... §r§4||§r")));

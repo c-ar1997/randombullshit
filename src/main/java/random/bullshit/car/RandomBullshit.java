@@ -51,9 +51,9 @@ public class RandomBullshit implements ModInitializer {
 			timer = timer - 1;
 			if (timer == 0) {
 				if (!isGlobal){
-					EventsClass.selectSingleEvent(serverPlayerEntity.getWorld().getRandom().nextBetween(0,15),serverPlayerEntity);
+					EventsClass.selectSingleEvent(serverPlayerEntity.getWorld().getRandom().nextBetween(0,18),serverPlayerEntity);
 				} else {
-					EventsClass.selectAllEvent(serverPlayerEntity.getWorld().getRandom().nextBetween(0,1),serverPlayerEntity);
+					EventsClass.selectAllEvent(serverPlayerEntity.getWorld().getRandom().nextBetween(0,2),serverPlayerEntity);
 				}
 				timer = null;
 				serverPlayerEntity = null;

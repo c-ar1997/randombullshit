@@ -1,12 +1,16 @@
 package random.bullshit.car.util;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.WardenEntity;
+import net.minecraft.entity.mob.ZombieEntity;
+import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
@@ -49,6 +53,9 @@ public class EventsClass {
             case 13: strength(plr); break;
             case 14: yuuki(plr); break;
             case 15: noodleArms(plr); break;
+            case 16: pregnancy(plr); break;
+            case 17: giveWither(plr); break;
+            case 18: hypercam(plr); break;
             default:
                 RandomBullshit.LOGGER.info("something went wrong apparently");
         }
@@ -60,6 +67,8 @@ public class EventsClass {
         switch(rand){
             case 0: tntCartRain(serverPlayerEntity); break;
             case 1: globalBlindness(serverPlayerEntity); break;
+            case 2: jeb(serverPlayerEntity);
+            default: RandomBullshit.LOGGER.info("something went wrong apparently");
         }
     }
 
@@ -81,10 +90,40 @@ public class EventsClass {
         }
     }
 
+    public static void pregnancy(ServerPlayerEntity plr){
+        if (!plr.getWorld().isClient) {
+            plr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Congratulations! §r§4||§r")));
+            for (int i = 5; i >= 0; i--){
+                ZombieEntity zombie = EntityType.ZOMBIE.spawn(plr.getServerWorld(),plr.getBlockPos(),SpawnReason.EVENT);
+                assert zombie != null;
+                zombie.setBaby(true);
+            }
+        }
+    }
+
+    public static void hypercam(ServerPlayerEntity plr){
+        if (!plr.getWorld().isClient) {
+            plr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Unregistered Hypercam §r§4||§r")));
+            }
+        MinecraftClient client = MinecraftClient.getInstance();
+        assert client.player != null;
+        if (client.player.getName().getString().equals(plr.getName().getString())){
+            client.options.getMaxFps().setValue(10);
+            client.options.write();
+        }
+        }
+
     public static void giveTotem(ServerPlayerEntity plr){
         if (!plr.getWorld().isClient()){
             plr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Totem of Undying! §r§4||§r")));
             plr.getInventory().setStack(plr.getInventory().getEmptySlot(),Items.TOTEM_OF_UNDYING.getDefaultStack());
+        }
+    }
+
+    public static void giveWither(ServerPlayerEntity plr){
+        if (!plr.getWorld().isClient()){
+            plr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Use it wisely. :3 §r§4||§r")));
+            plr.getInventory().setStack(plr.getInventory().getEmptySlot(),Items.WITHER_SPAWN_EGG.getDefaultStack());
         }
     }
 
@@ -118,7 +157,7 @@ public class EventsClass {
     public static void foodPoisoning(ServerPlayerEntity plr){
         if (!plr.getWorld().isClient()){
             plr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Food Poisoning! §r§4||§r")));
-            plr.setStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 120, 255), plr);
+            plr.setStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 1200, 255), plr);
         }
     }
 
@@ -133,25 +172,29 @@ public class EventsClass {
         if (!plr.getWorld().isClient) {
             plr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Say hi to Cupcake :3 §r§4||§r")));
             ServerWorld servWorld = (ServerWorld) plr.getWorld();
-            plr.getWorld().spawnEntity(EntityType.WARDEN.spawn(servWorld,plr.getBlockPos(), SpawnReason.EVENT));
+            WardenEntity warden = EntityType.WARDEN.spawn(plr.getServerWorld(),plr.getBlockPos(),SpawnReason.EVENT);
+            assert warden != null;
+            warden.setCustomName(Text.literal("Cupcake"));
         }
     }
 
     public static void boogieWoogie(ServerPlayerEntity plr){
-        if (!plr.getWorld().isClient()){
-            ServerWorld serverWorld = plr.getServerWorld();
-            Random rand = serverWorld.getRandom();
-            ServerPlayerEntity swapPlr = serverWorld.getPlayers().get(rand.nextBetween(0,serverWorld.getPlayers().size()-1));
-            double plrX = plr.getX();
-            double plrY = plr.getY();
-            double plrZ = plr.getZ();
+        ServerWorld serverWorld = plr.getServerWorld();
+        Random rand = serverWorld.getRandom();
+        ServerPlayerEntity swapPlr = serverWorld.getPlayers().get(rand.nextBetween(0,serverWorld.getPlayers().size() - 1));
+        if (!swapPlr.getName().contains(plr.getName())){
             double swpPlrX = swapPlr.getX();
             double swpPlrY = swapPlr.getY();
             double swpPlrZ = swapPlr.getZ();
+            double plrX = plr.getX();
+            double plrY = plr.getY();
+            double plrZ = plr.getZ();
             plr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Swap! §r§4||§r")));
             swapPlr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Swap! §r§4||§r")));
-            plr.setPos(swpPlrX,swpPlrY,swpPlrZ);
             swapPlr.setPos(plrX,plrY,plrZ);
+            plr.setPos(swpPlrX,swpPlrY,swpPlrZ);
+        } else {
+            boogieWoogie(plr);
         }
     }
 
@@ -193,9 +236,7 @@ public class EventsClass {
         }
     }
 
-
-
-    // global ones below
+    // global shi below
 
     public static void tntCartRain(ServerPlayerEntity serverPlayerEntity){
         serverPlayerEntity.getServerWorld().getPlayers().forEach(serverPlayerEntity1 -> {
@@ -211,4 +252,11 @@ public class EventsClass {
         });
     }
 
+    public static void jeb(ServerPlayerEntity serverPlayerEntity){
+        serverPlayerEntity.getServerWorld().getPlayers().forEach(serverPlayerEntity1 -> {
+            serverPlayerEntity1.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d jeb_ §r§4||§r")));
+            SheepEntity sheep = EntityType.SHEEP.spawn(serverPlayerEntity1.getServerWorld(),serverPlayerEntity1.getBlockPos(),SpawnReason.EVENT);
+            sheep.setCustomName(Text.literal("jeb_"));
+        });
+    }
 }

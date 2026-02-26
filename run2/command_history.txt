@@ -1,3 +1,6 @@
 /startevent
 /time set day
 /globalevent
+/time set day
+/globalevent
+/startevent
