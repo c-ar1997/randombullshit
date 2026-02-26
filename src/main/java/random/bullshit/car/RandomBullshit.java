@@ -3,6 +3,7 @@ package random.bullshit.car;
 import com.ibm.icu.impl.Pair;
 import net.fabricmc.api.ModInitializer;
 
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
@@ -14,7 +15,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import random.bullshit.car.command.StartEvent;
-import random.bullshit.car.util.EventsClass;
+import random.bullshit.car.sounds.ModSounds;
+import random.bullshit.car.util.*;
 
 import static net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents.START_SERVER_TICK;
 
@@ -51,9 +53,9 @@ public class RandomBullshit implements ModInitializer {
 			timer = timer - 1;
 			if (timer == 0) {
 				if (!isGlobal){
-					EventsClass.selectSingleEvent(serverPlayerEntity.getWorld().getRandom().nextBetween(0,18),serverPlayerEntity);
+					EventsClass.selectSingleEvent(serverPlayerEntity.getWorld().getRandom().nextBetween(0,29),serverPlayerEntity);
 				} else {
-					EventsClass.selectAllEvent(serverPlayerEntity.getWorld().getRandom().nextBetween(0,2),serverPlayerEntity);
+					EventsClass.selectAllEvent(serverPlayerEntity.getWorld().getRandom().nextBetween(0,3),serverPlayerEntity);
 				}
 				timer = null;
 				serverPlayerEntity = null;
@@ -75,10 +77,18 @@ public class RandomBullshit implements ModInitializer {
 						} else {
 							tntPlrEntity = null;
 							tntActive = false;
+							tntTimer = 80;
 						}
 					}
 				});
 		});
+		ModSounds.registerSoundevents();
+		PayloadTypeRegistry.playS2C().register(HellenKellerPayloadS2C.ID, HellenKellerPayloadS2C.CODEC);
+		PayloadTypeRegistry.playS2C().register(AirhornPayloadS2C.ID, AirhornPayloadS2C.CODEC);
+		PayloadTypeRegistry.playS2C().register(CrashPayloadS2C.ID, CrashPayloadS2C.CODEC);
+		PayloadTypeRegistry.playS2C().register(HypercamPayloadS2C.ID, HypercamPayloadS2C.CODEC);
+		PayloadTypeRegistry.playS2C().register(WindowPayloadS2C.ID, WindowPayloadS2C.CODEC);
+		PayloadTypeRegistry.playS2C().register(DrunkPayloadS2C.ID, DrunkPayloadS2C.CODEC);
 		LOGGER.info("RANDOM BULLSHIT GO");
 	}
 }

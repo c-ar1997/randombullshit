@@ -4,3 +4,12 @@
 /time set day
 /globalevent
 /startevent
+/startevent Player976
+/weather clear
+/startevent
+/effect clear @a
+/gamerule doMobSpawning false
+/kill @e
+/time set day
+/gamerule doDaylightCycle false
+/startevent
