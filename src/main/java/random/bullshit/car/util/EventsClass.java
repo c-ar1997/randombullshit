@@ -1,10 +1,15 @@
 package random.bullshit.car.util;
 
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -21,19 +26,23 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.stat.Stat;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.thread.LockHelper;
 import net.minecraft.world.event.BlockPositionSource;
 import org.jetbrains.annotations.Nullable;
 import random.bullshit.car.RandomBullshit;
+import random.bullshit.car.sounds.ModSounds;
 
 public class EventsClass {
     // all the event stuff is here
 
     public static void selectSingleEvent(int rand, ServerPlayerEntity plr){
+        plr.networkHandler.sendPacket(new SubtitleS2CPacket(Text.of("")));
         plr.getWorld().playSound(null,plr.getBlockPos(),
                 SoundEvents.BLOCK_NOTE_BLOCK_PLING.value(), SoundCategory.MASTER,1f,1f);
         switch (rand){
@@ -56,6 +65,17 @@ public class EventsClass {
             case 16: pregnancy(plr); break;
             case 17: giveWither(plr); break;
             case 18: hypercam(plr); break;
+            case 19: hellenkeller(plr); break;
+            case 20: airhorn(plr); break;
+            case 21: redcircle(plr); break;
+            case 22: immortality(plr); break;
+            case 23: fakeCreeper(plr); break;
+            case 24: herobrine(plr); break;
+            case 25: fakeHurt(plr); break;
+            case 26: alex(plr); break;
+            case 27: crash(plr); break;
+            case 28: window(plr); break;
+            case 29: invert(plr); break;
             default:
                 RandomBullshit.LOGGER.info("something went wrong apparently");
         }
@@ -67,7 +87,8 @@ public class EventsClass {
         switch(rand){
             case 0: tntCartRain(serverPlayerEntity); break;
             case 1: globalBlindness(serverPlayerEntity); break;
-            case 2: jeb(serverPlayerEntity);
+            case 2: jeb(serverPlayerEntity); break;
+            case 3: globalBoogieWoogie(serverPlayerEntity); break;
             default: RandomBullshit.LOGGER.info("something went wrong apparently");
         }
     }
@@ -90,6 +111,30 @@ public class EventsClass {
         }
     }
 
+    public static void fakeCreeper(ServerPlayerEntity plr){
+        if (!plr.getWorld().isClient) {
+            plr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Creeper Swarm §r§4||§r")));
+            plr.getWorld().playSound(null,plr.getBlockPos(),
+                    SoundEvents.ENTITY_CREEPER_PRIMED, SoundCategory.MASTER,10f,1f);
+        }
+    }
+
+    public static void fakeHurt(ServerPlayerEntity plr){
+        if (!plr.getWorld().isClient) {
+            plr.getWorld().playSound(null,plr.getBlockPos(),
+                    SoundEvents.ENTITY_PLAYER_HURT, SoundCategory.MASTER,10f,1f);
+        }
+    }
+
+    public static void herobrine(ServerPlayerEntity plr){
+        if (!plr.getWorld().isClient()){
+            plr.getWorld().playSound(null,plr.getBlockPos(),
+                    SoundEvents.AMBIENT_CAVE.value(), SoundCategory.MASTER,10f,1f);
+            plr.sendMessage(Text.literal("§eHerobrine has joined the game"));
+            plr.sendMessage(Text.literal("<Herobrine> Your time has come, " + plr.getName().getString() + "."));
+        }
+    }
+
     public static void pregnancy(ServerPlayerEntity plr){
         if (!plr.getWorld().isClient) {
             plr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Congratulations! §r§4||§r")));
@@ -105,13 +150,20 @@ public class EventsClass {
         if (!plr.getWorld().isClient) {
             plr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Unregistered Hypercam §r§4||§r")));
             }
-        MinecraftClient client = MinecraftClient.getInstance();
-        assert client.player != null;
-        if (client.player.getName().getString().equals(plr.getName().getString())){
-            client.options.getMaxFps().setValue(10);
-            client.options.write();
-        }
-        }
+        ServerPlayNetworking.send(plr,new HypercamPayloadS2C(plr.getBlockPos()));
+    }
+    public static void hellenkeller(ServerPlayerEntity plr){
+        ServerPlayNetworking.send(plr,new HellenKellerPayloadS2C(plr.getBlockPos()));
+        plr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Hellen Keller §r§4||§r")));
+        plr.setStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS,1200,255), plr);
+    }
+
+    public static void airhorn(ServerPlayerEntity plr){
+        ServerPlayNetworking.send(plr, new AirhornPayloadS2C(plr.getBlockPos()));
+        plr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Airhorn §r§4||§r")));
+        plr.getWorld().playSound(null,plr.getBlockPos(),
+                ModSounds.BIRD, SoundCategory.MASTER,1f,1f);
+    }
 
     public static void giveTotem(ServerPlayerEntity plr){
         if (!plr.getWorld().isClient()){
@@ -171,7 +223,6 @@ public class EventsClass {
     public static void warden(ServerPlayerEntity plr){
         if (!plr.getWorld().isClient) {
             plr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Say hi to Cupcake :3 §r§4||§r")));
-            ServerWorld servWorld = (ServerWorld) plr.getWorld();
             WardenEntity warden = EntityType.WARDEN.spawn(plr.getServerWorld(),plr.getBlockPos(),SpawnReason.EVENT);
             assert warden != null;
             warden.setCustomName(Text.literal("Cupcake"));
@@ -182,7 +233,7 @@ public class EventsClass {
         ServerWorld serverWorld = plr.getServerWorld();
         Random rand = serverWorld.getRandom();
         ServerPlayerEntity swapPlr = serverWorld.getPlayers().get(rand.nextBetween(0,serverWorld.getPlayers().size() - 1));
-        if (!swapPlr.getName().contains(plr.getName())){
+        if (!swapPlr.getName().contains(plr.getName()) && !swapPlr.isCreative() && !swapPlr.isSpectator()){
             double swpPlrX = swapPlr.getX();
             double swpPlrY = swapPlr.getY();
             double swpPlrZ = swapPlr.getZ();
@@ -193,6 +244,11 @@ public class EventsClass {
             swapPlr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Swap! §r§4||§r")));
             swapPlr.setPos(plrX,plrY,plrZ);
             plr.setPos(swpPlrX,swpPlrY,swpPlrZ);
+            if (rand.nextInt(9) == 1){
+                TntEntity tnt = EntityType.TNT.spawn(serverWorld,swapPlr.getBlockPos(),SpawnReason.EVENT);
+                assert tnt != null;
+                tnt.setFuse(3);
+            }
         } else {
             boogieWoogie(plr);
         }
@@ -236,6 +292,49 @@ public class EventsClass {
         }
     }
 
+    public static void redcircle(ServerPlayerEntity plr){
+        if (!plr.getWorld().isClient()){
+            plr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Big Red Circle §r§4||§r")));
+            plr.setStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 1200, 1), plr);
+        }
+    }
+
+    public static void immortality(ServerPlayerEntity plr){
+        if (!plr.getWorld().isClient()){
+            plr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Immortality §r§4||§r")));
+            plr.setStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 200, 255), plr);
+        }
+    }
+
+    public static void alex(ServerPlayerEntity plr){
+        if (!plr.getWorld().isClient()){
+            plr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Alex! §r§4||§r")));
+            plr.getInventory().setStack(plr.getInventory().getEmptySlot(),new ItemStack(Items.COAL,1));
+        }
+    }
+
+    public static void crash(ServerPlayerEntity plr){
+        if (!plr.getWorld().isClient()){
+            plr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Think fast, chuckle nuts! §r§4||§r")));
+            ServerPlayNetworking.send(plr,new CrashPayloadS2C(plr.getBlockPos()));
+        }
+    }
+
+    public static void window(ServerPlayerEntity plr){
+        if (!plr.getWorld().isClient()){
+            plr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d 144p §r§4||§r")));
+            ServerPlayNetworking.send(plr, new WindowPayloadS2C(plr.getBlockPos()));
+        }
+    }
+
+    public static void invert(ServerPlayerEntity plr){
+        if (!plr.getWorld().isClient()){
+            plr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Drunk! §r§4||§r")));
+            plr.setStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA,600,255), plr);
+            ServerPlayNetworking.send(plr, new DrunkPayloadS2C(plr.getBlockPos()));
+        }
+    }
+
     // global shi below
 
     public static void tntCartRain(ServerPlayerEntity serverPlayerEntity){
@@ -257,6 +356,26 @@ public class EventsClass {
             serverPlayerEntity1.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d jeb_ §r§4||§r")));
             SheepEntity sheep = EntityType.SHEEP.spawn(serverPlayerEntity1.getServerWorld(),serverPlayerEntity1.getBlockPos(),SpawnReason.EVENT);
             sheep.setCustomName(Text.literal("jeb_"));
+        });
+    }
+
+    public static void globalBoogieWoogie(ServerPlayerEntity plr){
+        plr.getServerWorld().getPlayers().forEach(serverPlayerEntity -> {
+            ServerWorld serverWorld = serverPlayerEntity.getServerWorld();
+            Random rand = serverWorld.getRandom();
+            ServerPlayerEntity swapPlr = serverWorld.getPlayers().get(rand.nextBetween(0,serverWorld.getPlayers().size() - 1));
+            if (!swapPlr.getName().contains(serverPlayerEntity.getName()) && !swapPlr.isCreative() && !swapPlr.isSpectator()){
+                double swpPlrX = swapPlr.getX();
+                double swpPlrY = swapPlr.getY();
+                double swpPlrZ = swapPlr.getZ();
+                double plrX = serverPlayerEntity.getX();
+                double plrY = serverPlayerEntity.getY();
+                double plrZ = serverPlayerEntity.getZ();
+                serverPlayerEntity.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Disperse! §r§4||§r")));
+                swapPlr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Disperse! §r§4||§r")));
+                swapPlr.setPos(plrX,plrY,plrZ);
+                serverPlayerEntity.setPos(swpPlrX,swpPlrY,swpPlrZ);
+            }
         });
     }
 }

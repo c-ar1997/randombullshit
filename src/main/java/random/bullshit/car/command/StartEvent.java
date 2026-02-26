@@ -19,13 +19,26 @@ public class StartEvent {
             commandDispatcher.register(CommandManager.literal("startevent").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
                     .executes(commandContext -> {
                 if (!commandContext.getSource().getPlayer().getWorld().isClient()) {
-                    Random random = commandContext.getSource().getPlayer().getWorld().getRandom();
-                    ServerPlayerEntity rPlr = (ServerPlayerEntity) commandContext.getSource().getPlayer().getWorld().getPlayers().get(random.nextBetween(0,commandContext.getSource().getPlayer().getWorld().getPlayers().size() - 1));
-                    commandContext.getSource().sendMessage(Text.literal("Selected " + rPlr.getName().getString() + " for an event." ));
-                    rPlr.getWorld().playSound(null,rPlr.getBlockPos(),
-                            SoundEvents.ENTITY_ENDER_DRAGON_GROWL, SoundCategory.MASTER,1f,1f);
-                    rPlr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§6 You have been selected for... §r§4||§r")));
-                    RandomBullshit.setTimer(rPlr,60, false);
+                    boolean creative = true;
+                    int timer = 15;
+                    while(creative){
+                        creative = false;
+                        timer--;
+                        Random random = commandContext.getSource().getPlayer().getWorld().getRandom();
+                        ServerPlayerEntity rPlr = (ServerPlayerEntity) commandContext.getSource().getPlayer().getWorld().getPlayers().get(random.nextBetween(0,commandContext.getSource().getPlayer().getWorld().getPlayers().size() - 1));
+                        if (!rPlr.isCreative() && !rPlr.isSpectator()) {
+                            commandContext.getSource().sendMessage(Text.literal("Selected " + rPlr.getName().getString() + " for an event." ));
+                            rPlr.getWorld().playSound(null,rPlr.getBlockPos(),
+                                    SoundEvents.ENTITY_ENDER_DRAGON_GROWL, SoundCategory.MASTER,1f,1f);
+                            rPlr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§6 You have been selected for... §r§4||§r")));
+                            RandomBullshit.setTimer(rPlr,60, false);
+                        } else {
+                            creative = true;
+                            if (timer<=0){
+                                break;
+                            }
+                        }
+                    }
                 } else {
                     commandContext.getSource().sendError(Text.literal("WHAT IS WROOONG WHAT"));
                 }
@@ -55,11 +68,13 @@ public class StartEvent {
                     .executes(commandContext -> {
                 if (!commandContext.getSource().getPlayer().getWorld().isClient()) {
                     commandContext.getSource().getPlayer().getServerWorld().getPlayers().forEach(serverPlayerEntity -> {
-                        commandContext.getSource().sendMessage(Text.literal("Triggered global event." ));
-                        serverPlayerEntity.getWorld().playSound(null,serverPlayerEntity.getBlockPos(),
-                                SoundEvents.ENTITY_ENDER_DRAGON_GROWL, SoundCategory.MASTER,1f,1f);
-                        serverPlayerEntity.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§6 All of you have been selected for... §r§4||§r")));
-                        RandomBullshit.setTimer(serverPlayerEntity,60, true);
+                        if (!serverPlayerEntity.isSpectator() && !serverPlayerEntity.isCreative()){
+                            commandContext.getSource().sendMessage(Text.literal("Triggered global event." ));
+                            serverPlayerEntity.getWorld().playSound(null,serverPlayerEntity.getBlockPos(),
+                                    SoundEvents.ENTITY_ENDER_DRAGON_GROWL, SoundCategory.MASTER,1f,1f);
+                            serverPlayerEntity.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§6 All of you have been selected for... §r§4||§r")));
+                            RandomBullshit.setTimer(serverPlayerEntity,60, true);
+                        }
                     });
                 }
                 return 0;
