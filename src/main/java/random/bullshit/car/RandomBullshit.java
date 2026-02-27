@@ -53,7 +53,7 @@ public class RandomBullshit implements ModInitializer {
 			timer = timer - 1;
 			if (timer == 0) {
 				if (!isGlobal){
-					EventsClass.selectSingleEvent(serverPlayerEntity.getWorld().getRandom().nextBetween(0,29),serverPlayerEntity);
+					EventsClass.selectSingleEvent(serverPlayerEntity.getWorld().getRandom().nextBetween(30,30),serverPlayerEntity);
 				} else {
 					EventsClass.selectAllEvent(serverPlayerEntity.getWorld().getRandom().nextBetween(0,3),serverPlayerEntity);
 				}
@@ -89,6 +89,7 @@ public class RandomBullshit implements ModInitializer {
 		PayloadTypeRegistry.playS2C().register(HypercamPayloadS2C.ID, HypercamPayloadS2C.CODEC);
 		PayloadTypeRegistry.playS2C().register(WindowPayloadS2C.ID, WindowPayloadS2C.CODEC);
 		PayloadTypeRegistry.playS2C().register(DrunkPayloadS2C.ID, DrunkPayloadS2C.CODEC);
+        PayloadTypeRegistry.playS2C().register(ChoppedPayloadS2C.ID, ChoppedPayloadS2C.CODEC);
 		LOGGER.info("RANDOM BULLSHIT GO");
 	}
 }

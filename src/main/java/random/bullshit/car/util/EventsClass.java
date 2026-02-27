@@ -76,6 +76,7 @@ public class EventsClass {
             case 27: crash(plr); break;
             case 28: window(plr); break;
             case 29: invert(plr); break;
+            case 30: chopped(plr); break;
             default:
                 RandomBullshit.LOGGER.info("something went wrong apparently");
         }
@@ -332,6 +333,12 @@ public class EventsClass {
             plr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Drunk! §r§4||§r")));
             plr.setStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA,600,255), plr);
             ServerPlayNetworking.send(plr, new DrunkPayloadS2C(plr.getBlockPos()));
+        }
+    }
+    public static void chopped(ServerPlayerEntity plr){
+        if (!plr.getWorld().isClient()){
+            plr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Chopped! §r§4||§r")));
+            ServerPlayNetworking.send(plr, new ChoppedPayloadS2C(plr.getBlockPos()));
         }
     }
 

@@ -10,4 +10,5 @@ public class RBNetworkingConstants {
     public static final Identifier CRASH_ID = Identifier.of(RandomBullshit.MOD_ID,"crash");
     public static final Identifier WINDOW_ID = Identifier.of(RandomBullshit.MOD_ID,"window");
     public static final Identifier DRUNK_ID = Identifier.of(RandomBullshit.MOD_ID,"drunk");
+    public static final Identifier CHOPPED_ID = Identifier.of(RandomBullshit.MOD_ID,"chopped");
 }

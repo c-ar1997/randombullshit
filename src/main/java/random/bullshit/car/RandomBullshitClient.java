@@ -12,6 +12,7 @@ import net.minecraft.client.input.KeyCodes;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.player.PlayerModelPart;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.sound.SoundCategory;
 import random.bullshit.car.util.*;
@@ -35,6 +36,8 @@ public class RandomBullshitClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(DrunkPayloadS2C.ID,((payload, context) ->
                 context.client().execute(() -> invert(context)
                 )));
+        ClientPlayNetworking.registerGlobalReceiver(ChoppedPayloadS2C.ID,((payload, context) ->
+                context.client().execute(() -> chopped(context))));
     }
     public void invert(ClientPlayNetworking.Context context){
                 context.client().options.forwardKey.setBoundKey(InputUtil.fromTranslationKey("key.keyboard.s"));
@@ -46,6 +49,16 @@ public class RandomBullshitClient implements ClientModInitializer {
     }
 
     // make a chopped method to remove the outer layer
+    public void chopped(ClientPlayNetworking.Context context){
+        context.client().options.togglePlayerModelPart(PlayerModelPart.CAPE, false);
+        context.client().options.togglePlayerModelPart(PlayerModelPart.HAT, false);
+        context.client().options.togglePlayerModelPart(PlayerModelPart.RIGHT_PANTS_LEG, false);
+        context.client().options.togglePlayerModelPart(PlayerModelPart.LEFT_PANTS_LEG, false);
+        context.client().options.togglePlayerModelPart(PlayerModelPart.RIGHT_SLEEVE, false);
+        context.client().options.togglePlayerModelPart(PlayerModelPart.LEFT_SLEEVE, false);
+        context.client().options.togglePlayerModelPart(PlayerModelPart.JACKET, false);
+        context.client().options.write();
+    }
 
     public void sound(ClientPlayNetworking.Context context, double sound){
         context.client().options.getSoundVolumeOption(SoundCategory.MASTER).setValue(sound);
