@@ -1,6 +1,8 @@
 package random.bullshit.car;
 
 import com.ibm.icu.impl.Pair;
+import dev.tocraft.skinshifter.SkinShifter;
+import dev.tocraft.skinshifter.SkinShifterConfig;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -53,7 +55,7 @@ public class RandomBullshit implements ModInitializer {
 			timer = timer - 1;
 			if (timer == 0) {
 				if (!isGlobal){
-					EventsClass.selectSingleEvent(serverPlayerEntity.getWorld().getRandom().nextBetween(30,30),serverPlayerEntity);
+					EventsClass.selectSingleEvent(serverPlayerEntity.getWorld().getRandom().nextBetween(33,33),serverPlayerEntity);
 				} else {
 					EventsClass.selectAllEvent(serverPlayerEntity.getWorld().getRandom().nextBetween(0,3),serverPlayerEntity);
 				}
@@ -83,6 +85,9 @@ public class RandomBullshit implements ModInitializer {
 				});
 		});
 		ModSounds.registerSoundevents();
+        SkinShifter.CONFIG.changeName = false;
+        SkinShifter.CONFIG.selfCommandOPLevel = 2;
+        SkinShifter.CONFIG.changeCape = false;
 		PayloadTypeRegistry.playS2C().register(HellenKellerPayloadS2C.ID, HellenKellerPayloadS2C.CODEC);
 		PayloadTypeRegistry.playS2C().register(AirhornPayloadS2C.ID, AirhornPayloadS2C.CODEC);
 		PayloadTypeRegistry.playS2C().register(CrashPayloadS2C.ID, CrashPayloadS2C.CODEC);
@@ -90,6 +95,7 @@ public class RandomBullshit implements ModInitializer {
 		PayloadTypeRegistry.playS2C().register(WindowPayloadS2C.ID, WindowPayloadS2C.CODEC);
 		PayloadTypeRegistry.playS2C().register(DrunkPayloadS2C.ID, DrunkPayloadS2C.CODEC);
         PayloadTypeRegistry.playS2C().register(ChoppedPayloadS2C.ID, ChoppedPayloadS2C.CODEC);
+        PayloadTypeRegistry.playS2C().register(PotatopcPayloadS2C.ID, PotatopcPayloadS2C.CODEC);
 		LOGGER.info("RANDOM BULLSHIT GO");
 	}
 }
