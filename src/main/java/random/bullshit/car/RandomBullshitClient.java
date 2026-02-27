@@ -83,5 +83,6 @@ public class RandomBullshitClient implements ClientModInitializer {
 
     public void fps(ClientPlayNetworking.Context context, int fps){
         context.client().options.getMaxFps().setValue(fps);
+        context.client().options.write();
     }
 }
