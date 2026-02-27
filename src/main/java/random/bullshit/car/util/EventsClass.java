@@ -1,5 +1,6 @@
 package random.bullshit.car.util;
 
+import dev.tocraft.skinshifter.SkinShifter;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -10,6 +11,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.TntEntity;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -37,6 +39,8 @@ import net.minecraft.world.event.BlockPositionSource;
 import org.jetbrains.annotations.Nullable;
 import random.bullshit.car.RandomBullshit;
 import random.bullshit.car.sounds.ModSounds;
+
+import java.util.UUID;
 
 public class EventsClass {
     // all the event stuff is here
@@ -76,6 +80,10 @@ public class EventsClass {
             case 27: crash(plr); break;
             case 28: window(plr); break;
             case 29: invert(plr); break;
+            case 30: chopped(plr); break;
+            case 31: potatopc(plr);break;
+            case 32: c_arCosplay(plr); break;
+            case 33: andrewCosplay(plr); break;
             default:
                 RandomBullshit.LOGGER.info("something went wrong apparently");
         }
@@ -334,6 +342,24 @@ public class EventsClass {
             ServerPlayNetworking.send(plr, new DrunkPayloadS2C(plr.getBlockPos()));
         }
     }
+    public static void chopped(ServerPlayerEntity plr){
+        if (!plr.getWorld().isClient()){
+            plr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Chopped! §r§4||§r")));
+            ServerPlayNetworking.send(plr, new ChoppedPayloadS2C(plr.getBlockPos()));
+        }
+    }
+    public static void potatopc(ServerPlayerEntity plr){
+        if (!plr.getWorld().isClient()){
+            plr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Potato PC! §r§4||§r")));
+            ServerPlayNetworking.send(plr, new PotatopcPayloadS2C(plr.getBlockPos()));
+        }
+    }
+        public static void andrewCosplay(ServerPlayerEntity plr){
+            if (!plr.getWorld().isClient()){
+                plr.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Andrew Cosplay! §r§4||§r")));
+                SkinShifter.setSkin(plr, UUID.fromString("e9232e82-e89e-419e-a377-a337b209d422"));
+            }
+        }
 
     // global shi below
 
@@ -356,6 +382,12 @@ public class EventsClass {
             serverPlayerEntity1.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d jeb_ §r§4||§r")));
             SheepEntity sheep = EntityType.SHEEP.spawn(serverPlayerEntity1.getServerWorld(),serverPlayerEntity1.getBlockPos(),SpawnReason.EVENT);
             sheep.setCustomName(Text.literal("jeb_"));
+        });
+    }
+    public static void c_arCosplay(ServerPlayerEntity serverPlayerEntity){
+        serverPlayerEntity.getServerWorld().getPlayers().forEach(serverPlayerEntity1 -> {
+            serverPlayerEntity1.networkHandler.sendPacket(new TitleS2CPacket(Text.of("§4||§r§d Slaps belly §r§4||§r")));
+            serverPlayerEntity.getAttributeInstance(EntityAttributes.GENERIC_SCALE).setBaseValue(1.5);
         });
     }
 
