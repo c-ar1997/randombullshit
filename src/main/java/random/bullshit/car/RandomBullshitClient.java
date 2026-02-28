@@ -1,27 +1,15 @@
 package random.bullshit.car;
 
-import com.ibm.icu.impl.StaticUnicodeSets;
-import com.ibm.icu.impl.locale.KeyTypeData;
-import com.mojang.authlib.minecraft.client.MinecraftClient;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.client.Keyboard;
-import net.minecraft.client.gui.screen.DownloadingTerrainScreen;
-import net.minecraft.client.gui.screen.Overlay;
-import net.minecraft.client.input.KeyCodes;
 import net.minecraft.client.option.CloudRenderMode;
 import net.minecraft.client.option.GraphicsMode;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.ParticlesMode;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerModelPart;
-import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.sound.SoundCategory;
-import random.bullshit.car.util.*;
-
-import javax.swing.*;
-import javax.swing.text.JTextComponent;
+import random.bullshit.car.networking.*;
 
 public class RandomBullshitClient implements ClientModInitializer {
     @Override

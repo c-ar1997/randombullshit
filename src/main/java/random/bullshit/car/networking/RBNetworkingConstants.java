@@ -1,4 +1,4 @@
-package random.bullshit.car.util;
+package random.bullshit.car.networking;
 
 import net.minecraft.util.Identifier;
 import random.bullshit.car.RandomBullshit;

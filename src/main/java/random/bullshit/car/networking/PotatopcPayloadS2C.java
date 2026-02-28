@@ -1,7 +1,5 @@
-package random.bullshit.car.util;
+package random.bullshit.car.networking;
 
-import net.fabricmc.fabric.api.entity.event.v1.EntityElytraEvents;
-import net.minecraft.block.Block;
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;

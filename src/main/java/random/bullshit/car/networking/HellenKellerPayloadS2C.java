@@ -1,9 +1,8 @@
-package random.bullshit.car.util;
+package random.bullshit.car.networking;
 
 import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 
 public record HellenKellerPayloadS2C(BlockPos blockPos) implements CustomPayload {
